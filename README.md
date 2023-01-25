@@ -1,16 +1,36 @@
 # Modbus-Server-API
 
-## Available Scripts
+## Installation
 
-In the project directory, you can run:
+This is a [Node.js](https://nodejs.org/en/) module available through the
+[npm registry](https://www.npmjs.com/).
 
-### `node index`
+Before installing, [download and install Node.js](https://nodejs.org/en/download/).
+Node.js 0.10 or higher is required.
 
-Runs the app in the development mode.<br>
-Open [http://localhost:50220](http://localhost:5020) to view it in the browser.
+If this is a brand new project, make sure to create a `package.json` first with
+the [`npm init` command](https://docs.npmjs.com/creating-a-package-json-file).
 
-### `RUN`
+Installation is done using the
+[`npm install` command](https://docs.npmjs.com/getting-started/installing-npm-packages-locally):
 
-Make sure to clone first: https://github.com/dwcahyo23/IIOT-Backend.git
 
-And run the application
+## Quick Start
+
+ Make sure to clone first: https://github.com/dwcahyo23/IIOT-Backend.git
+
+ Change the modbus address
+
+  Install dependencies:
+
+```console
+$ npm install
+```
+
+  Start the server:
+
+```console
+$ npm start
+```
+
+  View the website at: http://localhost:5020
