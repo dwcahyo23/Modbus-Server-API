@@ -13,6 +13,8 @@ import { setIntervalAsync } from 'set-interval-async';
 
 import { kompresor } from './modbus_read/kompresor.js';
 import { panel_b1 } from './modbus_read/panel_b1.js';
+import { panel_b2 } from './modbus_read/panel_b2.js';
+import { panel_b2_1 } from './modbus_read/panel_b2_1.js';
 
 dotenv.config();
 
@@ -64,7 +66,9 @@ io.on('connection', (socket) => {
   const run = setIntervalAsync(async () => {
     await kompresor().then(update_db).then(update_ui).catch(update_ui);
     await panel_b1().then(update_db).then(update_ui).catch(update_ui);
-  }, 10000);
+    await panel_b2().then(update_db).then(update_ui).catch(update_ui);
+    await panel_b2_1().then(update_db).then(update_ui).catch(update_ui);
+  }, 600000);
 });
 
 httpServer.listen(process.env.PORT_APP, () => {
