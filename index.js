@@ -8,6 +8,8 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 import axios from 'axios';
+import { format } from 'date-fns';
+import { setIntervalAsync } from 'set-interval-async';
 
 import { kompresor } from './modbus_read/kompresor.js';
 import { panel_b1 } from './modbus_read/panel_b1.js';
@@ -34,31 +36,35 @@ app.get('/', (req, res) => {
   });
 });
 
-function onFulfilled(result) {
-  // console.log(result.name);
-  axios({
-    method: 'post',
-    url: 'http://localhost:5000/modbus',
-    data: {
-      name: result.name,
-      data: result.data,
-    },
-  });
-  return result;
-}
-
 io.on('connection', (socket) => {
   socket.emit('message', 'Connecting');
-  setInterval(() => {
-    kompresor()
-      .then(onFulfilled)
-      .then((result) => socket.emit('message', `name: ${result.name}, data: ${result.data}`))
-      .catch((err) => socket.emit('message', `${err.name}, ${err.message}`));
 
-    panel_b1()
-      .then(onFulfilled)
-      .then((result) => socket.emit('message', `name: ${result.name}, data: ${result.data}`))
-      .catch((err) => socket.emit('message', `${err.name}, ${err.message}`));
+  const update_db = async (result) => {
+    let response = null;
+    await axios({
+      method: 'post',
+      url: 'http://localhost:5000/modbus',
+      data: {
+        name: result.name,
+        data: { kwh: result.buffer.readUInt32BE(), date: new Date() },
+      },
+    })
+      .then((res) => { response = res; })
+      .catch((err) => { response = err; });
+    return response;
+  };
+
+  const update_ui = async (result) => {
+    if (result.status === 200) {
+      socket.emit('message', `${format(new Date(), 'HH:mm:ss')}: ${result.config.data}`);
+    } else {
+      socket.emit('message', `${format(new Date(), 'HH:mm:ss')}: ${result.message}`);
+    }
+  };
+
+  const run = setIntervalAsync(async () => {
+    await kompresor().then(update_db).then(update_ui).catch(update_ui);
+    await panel_b1().then(update_db).then(update_ui).catch(update_ui);
   }, 10000);
 });
 

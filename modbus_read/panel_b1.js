@@ -66,7 +66,7 @@ export const panel_b1 = () => new Promise((resolve, reject) => {
   setTimeout(() => {
     if (client.isOpen) {
       resolve(
-        client.readHoldingRegisters(768, 10)
+        client.readHoldingRegisters(1304, 10)
           .then((result) => ({ ...result, name: 'panel_b1' })),
       );
     } else {
