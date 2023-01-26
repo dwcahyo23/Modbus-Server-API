@@ -4,8 +4,6 @@ import { Server } from 'socket.io';
 import { createServer } from 'http';
 import * as dotenv from 'dotenv';
 import cors from 'cors';
-import path from 'path';
-import { fileURLToPath } from 'url';
 
 import axios from 'axios';
 import { format } from 'date-fns';
@@ -16,10 +14,6 @@ import { panel_b1 } from './modbus_read/panel_b1.js';
 
 dotenv.config();
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const port = process.env.PORT;
 const app = express();
 const httpServer = createServer(app);
 const io = new Server(httpServer);
@@ -68,6 +62,6 @@ io.on('connection', (socket) => {
   }, 10000);
 });
 
-httpServer.listen(port, () => {
-  console.log(`Server up & running in ${port}`);
+httpServer.listen(process.env.PORT_APP, () => {
+  console.log(`Server up & running in ${process.env.PORT_APP}`);
 });
