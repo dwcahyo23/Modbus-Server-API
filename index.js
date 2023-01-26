@@ -4,6 +4,8 @@ import { Server } from 'socket.io';
 import { createServer } from 'http';
 import * as dotenv from 'dotenv';
 import cors from 'cors';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 import axios from 'axios';
 import { format } from 'date-fns';
@@ -13,6 +15,9 @@ import { kompresor } from './modbus_read/kompresor.js';
 import { panel_b1 } from './modbus_read/panel_b1.js';
 
 dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const httpServer = createServer(app);
