@@ -1,4 +1,5 @@
 import pkg from 'modbus-serial';
+import { format } from 'date-fns';
 
 const ModbusRTU = pkg;
 
@@ -79,7 +80,7 @@ const data = async () => {
       pwr_f: result.data[21],
     }));
   const [p1, p2] = await Promise.all([kwh, volt]);
-  return { data: { ...p1, ...p2, date: new Date() }, name: 'kompresor' };
+  return { data: { ...p1, ...p2, date: format(new Date(), 'YYYY-MM-DD HH:mm:ss') }, name: 'kompresor' };
 };
 
 export const kompresor = () => new Promise((resolve, reject) => {
