@@ -64,11 +64,11 @@ io.on('connection', (socket) => {
   };
 
   const run = setIntervalAsync(async () => {
-    await kompresor().then(update_db).then(update_ui).catch(update_ui);
-    await panel_b1().then(update_db).then(update_ui).catch(update_ui);
-    await panel_b2().then(update_db).then(update_ui).catch(update_ui);
-    await panel_b2_1().then(update_db).then(update_ui).catch(update_ui);
-  }, 6000);
+    await kompresor().then((res) => update_db(res)).then((res) => update_ui(res)).catch(update_ui);
+    await panel_b1().then((res) => update_db(res)).then((res) => update_ui(res)).catch(update_ui);
+    await panel_b2().then((res) => update_db(res)).then((res) => update_ui(res)).catch(update_ui);
+    await panel_b2_1().then((res) => update_db(res)).then((res) => update_ui(res)).catch(update_ui);
+  }, 300000);
 });
 
 httpServer.listen(process.env.PORT_APP, () => {
