@@ -47,7 +47,7 @@ io.on('connection', (socket) => {
       url: 'http://localhost:5000/modbus',
       data: {
         name: result.name,
-        data: { kwh: result.buffer.readUInt32BE(), date: new Date() },
+        data: result.data,
       },
     })
       .then((res) => { response = res; })
@@ -68,7 +68,7 @@ io.on('connection', (socket) => {
     await panel_b1().then(update_db).then(update_ui).catch(update_ui);
     await panel_b2().then(update_db).then(update_ui).catch(update_ui);
     await panel_b2_1().then(update_db).then(update_ui).catch(update_ui);
-  }, 600000);
+  }, 6000);
 });
 
 httpServer.listen(process.env.PORT_APP, () => {

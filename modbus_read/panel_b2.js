@@ -62,13 +62,31 @@ const connect = () => {
     });
 };
 
+const data = async () => {
+  const kwh = client.readHoldingRegisters(1304, 10)
+    .then((result) => ({ kwh: result.buffer.readUInt32BE() }));
+  const volt = client.readHoldingRegisters(768, 40)
+    .then((result) => ({
+      i1: result.data[0],
+      i2: result.data[1],
+      i3: result.data[1],
+      v1: result.data[14],
+      v2: result.data[15],
+      v3: result.data[16],
+      f: result.data[22],
+      act_p: result.data[26],
+      rct_p: result.data[34],
+      app_p: result.data[38],
+      pwr_f: result.data[21],
+    }));
+  const [p1, p2] = await Promise.all([kwh, volt]);
+  return { data: { ...p1, ...p2, date: new Date() }, name: 'panel_b2' };
+};
+
 export const panel_b2 = () => new Promise((resolve, reject) => {
   setTimeout(() => {
     if (client.isOpen) {
-      resolve(
-        client.readHoldingRegisters(1304, 10)
-          .then((result) => ({ ...result, name: 'panel_b2' })),
-      );
+      resolve(data());
     } else {
       connect();
       reject(new Error('waiting connection panel_b2'));
