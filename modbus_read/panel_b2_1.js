@@ -82,7 +82,7 @@ const data = async () => {
       pwr_f: result.data[21],
     }));
   const [p1, p2] = await Promise.all([kwh, volt]);
-  return { data: { ...p1, ...p2, date: format(new Date(), 'yyyy-MM-DD HH:mm:ss') }, name: 'panel_b2_1' };
+  return { data: { ...p1, ...p2, date: format(new Date(), 'yyyy-MM-dd HH:mm:ss') }, name: 'panel_b2_1' };
 };
 
 export const panel_b2_1 = () => new Promise((resolve, reject) => {
