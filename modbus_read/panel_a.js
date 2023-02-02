@@ -45,18 +45,18 @@ const connect = () => {
   clearTimeout(timeoutConnectRef);
   // if client already open, just run
   if (client.isOpen) {
-    panel_b2_1();
+    panel_a();
     // run();
   }
 
   // if client closed, open a new connection
-  client.connectTCP('10.23.19.59', { port: 502 })
+  client.connectTCP('10.23.18.53', { port: 502 })
     .then(() => {
-      client.setID(1);
-      client.setTimeout(3000);
+      client.setID(5);
+      client.setTimeout(2000);
     })
     .then(() => {
-      console.log('Panel B2-1 connected');
+      console.log('Panel A connected');
     })
     .catch((e) => {
       checkError(e);
@@ -65,33 +65,22 @@ const connect = () => {
 };
 
 const data = async () => {
-  const kwh = client.readHoldingRegisters(1304, 10)
-    .then((result) => ({ kwh: result.buffer.readUInt32BE() }));
-  const volt = client.readHoldingRegisters(768, 40)
-    .then((result) => ({
-      i1: result.data[0],
-      i2: result.data[1],
-      i3: result.data[1],
-      v1: result.data[14],
-      v2: result.data[15],
-      v3: result.data[16],
-      f: result.data[22],
-      act_p: result.data[26],
-      rct_p: result.data[34],
-      app_p: result.data[38],
-      pwr_f: result.data[21],
-    }));
-  const [p1, p2] = await Promise.all([kwh, volt]);
-  return { data: { ...p1, ...p2, date: format(new Date(), 'yyyy-MM-dd HH:mm:ss') }, name: 'panel_b2_1' };
+  const kwh = client.readHoldingRegisters(236, 20)
+    .then((result) => result);
+  return kwh;
 };
 
-export const panel_b2_1 = () => new Promise((resolve, reject) => {
+export const panel_a = () => new Promise((resolve, reject) => {
   setTimeout(() => {
     if (client.isOpen) {
       resolve(data());
     } else {
       connect();
-      reject(new Error('waiting connection panel_b2_1'));
+      reject(new Error('waiting connection panel_a'));
     }
   }, 1000);
 });
+
+setInterval(() => {
+  panel_a().then((res) => console.log(res)).catch((err) => console.log(err));
+}, 10000);

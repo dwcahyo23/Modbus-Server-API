@@ -55,7 +55,7 @@ const connect = () => {
       client.setTimeout(3000);
     })
     .then(() => {
-      console.log('Panel B1 connected');
+      console.log('Panel B2 connected');
     })
     .catch((e) => {
       checkError(e);
