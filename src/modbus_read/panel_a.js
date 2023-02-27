@@ -58,7 +58,7 @@ export default {
                 })
                 .catch((e) => {
                     checkError(e)
-                    // console.log(e.message);
+                    console.log(e.message)
                 })
         }
 

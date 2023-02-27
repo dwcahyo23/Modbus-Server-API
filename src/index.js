@@ -8,7 +8,7 @@ import logger from 'morgan'
 
 import axios from 'axios'
 import { format } from 'date-fns'
-import { setIntervalAsync } from 'set-interval-async'
+import { setIntervalAsync } from 'set-interval-async/fixed'
 import kompresor from './modbus_read/kompresor'
 import panel_a from './modbus_read/panel_a'
 import panel_b from './modbus_read/panel_b'
@@ -100,19 +100,23 @@ io.on('connection', (socket) => {
             .then((res) => update_db(res))
             .then((res) => update_ui(res))
             .catch(update_ui)
+    }, 500000)
 
+    const runA = setIntervalAsync(async () => {
         await panel_a
             .get_data()
             .then((res) => update_db(res))
             .then((res) => update_ui(res))
             .catch(update_ui)
+    }, 10000)
 
+    const runB = setIntervalAsync(async () => {
         await panel_b
             .get_data()
             .then((res) => update_db(res))
             .then((res) => update_ui(res))
             .catch(update_ui)
-    }, 300000)
+    }, 13000)
 })
 
 httpServer.listen(process.env.PORT_APP, () => {
