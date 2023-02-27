@@ -112,7 +112,7 @@ io.on('connection', (socket) => {
             .then((res) => update_db(res))
             .then((res) => update_ui(res))
             .catch(update_ui)
-    }, 3000)
+    }, 300000)
 })
 
 httpServer.listen(process.env.PORT_APP, () => {
