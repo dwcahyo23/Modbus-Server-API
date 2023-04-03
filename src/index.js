@@ -100,7 +100,7 @@ io.on('connection', (socket) => {
             .then((res) => update_db(res))
             .then((res) => update_ui(res))
             .catch(update_ui)
-    }, 10000)
+    }, 60000)
 
     const runA = setIntervalAsync(async () => {
         await panel_a
@@ -108,7 +108,7 @@ io.on('connection', (socket) => {
             .then((res) => update_db(res))
             .then((res) => update_ui(res))
             .catch(update_ui)
-    }, 10000)
+    }, 60000)
 
     const runB = setIntervalAsync(async () => {
         await panel_b
@@ -116,7 +116,7 @@ io.on('connection', (socket) => {
             .then((res) => update_db(res))
             .then((res) => update_ui(res))
             .catch(update_ui)
-    }, 10000)
+    }, 60000)
 })
 
 httpServer.listen(process.env.PORT_APP, () => {
