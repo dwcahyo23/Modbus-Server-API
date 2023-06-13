@@ -15,6 +15,7 @@ import panel_b from './modbus_read/panel_b'
 import panel_b1 from './modbus_read/panel_b1'
 import panel_b2 from './modbus_read/panel_b2'
 import panel_b2_1 from './modbus_read/panel_b2_1'
+import modbus from './modbus_app/modbus'
 
 dotenv.config()
 const app = express()
@@ -76,47 +77,60 @@ io.on('connection', (socket) => {
         }
     }
 
-    const run = setIntervalAsync(async () => {
-        await kompresor
-            .get_data()
-            .then((res) => update_db(res))
-            .then((res) => update_ui(res))
-            .catch(update_ui)
+    const updateUi = async (params) => {
+        socket.emit('message', `${format(new Date(), 'HH:mm:ss')}: ${params}`)
+    }
 
-        await panel_b1
-            .get_data()
-            .then((res) => update_db(res))
-            .then((res) => update_ui(res))
-            .catch(update_ui)
+    const ModbusRun = setIntervalAsync(async () => {
+        await modbus
+            .Modbus()
+            .then((params) => {
+                updateUi(params)
+            })
+            .catch(updateUi)
+    }, 10000)
 
-        await panel_b2
-            .get_data()
-            .then((res) => update_db(res))
-            .then((res) => update_ui(res))
-            .catch(update_ui)
+    // const run = setIntervalAsync(async () => {
+    //     await kompresor
+    //         .get_data()
+    //         .then((res) => update_db(res))
+    //         .then((res) => update_ui(res))
+    //         .catch(update_ui)
 
-        await panel_b2_1
-            .get_data()
-            .then((res) => update_db(res))
-            .then((res) => update_ui(res))
-            .catch(update_ui)
-    }, 60000)
+    //     await panel_b1
+    //         .get_data()
+    //         .then((res) => update_db(res))
+    //         .then((res) => update_ui(res))
+    //         .catch(update_ui)
 
-    const runA = setIntervalAsync(async () => {
-        await panel_a
-            .get_data()
-            .then((res) => update_db(res))
-            .then((res) => update_ui(res))
-            .catch(update_ui)
-    }, 60000)
+    //     await panel_b2
+    //         .get_data()
+    //         .then((res) => update_db(res))
+    //         .then((res) => update_ui(res))
+    //         .catch(update_ui)
 
-    const runB = setIntervalAsync(async () => {
-        await panel_b
-            .get_data()
-            .then((res) => update_db(res))
-            .then((res) => update_ui(res))
-            .catch(update_ui)
-    }, 60000)
+    //     await panel_b2_1
+    //         .get_data()
+    //         .then((res) => update_db(res))
+    //         .then((res) => update_ui(res))
+    //         .catch(update_ui)
+    // }, 60000)
+
+    // const runA = setIntervalAsync(async () => {
+    //     await panel_a
+    //         .get_data()
+    //         .then((res) => update_db(res))
+    //         .then((res) => update_ui(res))
+    //         .catch(update_ui)
+    // }, 60000)
+
+    // const runB = setIntervalAsync(async () => {
+    //     await panel_b
+    //         .get_data()
+    //         .then((res) => update_db(res))
+    //         .then((res) => update_ui(res))
+    //         .catch(update_ui)
+    // }, 60000)
 })
 
 httpServer.listen(process.env.PORT_APP, () => {
