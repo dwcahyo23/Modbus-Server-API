@@ -15,7 +15,9 @@ import panel_b from './modbus_read/panel_b'
 import panel_b1 from './modbus_read/panel_b1'
 import panel_b2 from './modbus_read/panel_b2'
 import panel_b2_1 from './modbus_read/panel_b2_1'
-import modbus from './modbus_app/modbus'
+
+import Modbus from './modbus_app/modbus'
+import _ from 'lodash'
 
 dotenv.config()
 const app = express()
@@ -40,54 +42,77 @@ app.get('/', (req, res) => {
 io.on('connection', (socket) => {
     socket.emit('message', 'Connecting')
 
-    const update_db = async (result) => {
-        let response = null
-        await axios({
-            method: 'post',
-            url: 'http://localhost:5000/modbus',
-            data: {
-                name: result.name,
-                data: result.data,
-            },
-        })
-            .then((res) => {
-                response = res
-            })
-            .catch((err) => {
-                response = err
-            })
-        return response
-    }
+    // const update_db = async (result) => {
+    //     let response = null
+    //     await axios({
+    //         method: 'post',
+    //         url: 'http://localhost:5000/modbus',
+    //         data: {
+    //             name: result.name,
+    //             data: result.data,
+    //         },
+    //     })
+    //         .then((res) => {
+    //             response = res
+    //         })
+    //         .catch((err) => {
+    //             response = err
+    //         })
+    //     return response
+    // }
 
-    const update_ui = async (result) => {
-        if (result.status === 200) {
-            socket.emit(
-                'message',
-                `${format(new Date(), 'HH:mm:ss')}: ${result.config.data}`
-            )
-        } else {
-            socket.emit(
-                'message',
-                `${format(new Date(), 'HH:mm:ss')}: ${result.message}`
-            )
-            // socket.emit(
-            //     'message',
-            //     `${format(new Date(), 'HH:mm:ss')}: ${JSON.stringify(result)}`
-            // )
-        }
-    }
+    // const update_ui = async (result) => {
+    //     if (result.status === 200) {
+    //         socket.emit(
+    //             'message',
+    //             `${format(new Date(), 'HH:mm:ss')}: ${result.config.data}`
+    //         )
+    //     } else {
+    //         socket.emit(
+    //             'message',
+    //             `${format(new Date(), 'HH:mm:ss')}: ${result.message}`
+    //         )
+    //         // socket.emit(
+    //         //     'message',
+    //         //     `${format(new Date(), 'HH:mm:ss')}: ${JSON.stringify(result)}`
+    //         // )
+    //     }
+    // }
 
     const updateUi = async (params) => {
-        socket.emit('message', `${format(new Date(), 'HH:mm:ss')}: ${params}`)
+        socket.emit(
+            'message',
+            `${format(new Date(), 'dd/MM/yy HH:mm:ss')}: ${
+                params.mch_code
+            } count: ${params.count} run: ${params.run}`
+        )
+    }
+
+    const updateUierr = async (params) => {
+        socket.emit(
+            'message',
+            `${format(new Date(), 'dd/MM/yy HH:mm:ss')}: ${params} `
+        )
     }
 
     const ModbusRun = setIntervalAsync(async () => {
-        await modbus
-            .Modbus()
-            .then((params) => {
-                updateUi(params)
+        try {
+            Modbus.getModbusApp().then((res) => {
+                _.forEach(res.data, async (data, i) => {
+                    await Modbus.readModbusDevice(data)
+                        .then((res) => {
+                            // console.log({ ...res })
+                            updateUi(res)
+                        })
+                        .catch((error) => {
+                            console.log(error.message)
+                            updateUierr(error.message)
+                        })
+                })
             })
-            .catch(updateUi)
+        } catch (error) {
+            console.log(error)
+        }
     }, 10000)
 
     // const run = setIntervalAsync(async () => {
