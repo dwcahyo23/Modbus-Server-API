@@ -1,6 +1,6 @@
 const ModbusRTU = require('modbus-serial')
 import axios from 'axios'
-import _ from 'lodash'
+import _, { reject, result } from 'lodash'
 
 export default {
     async getModbusApp() {
@@ -33,28 +33,27 @@ export default {
                         client.setTimeout(3000)
                     })
                     .then(() => {
-                        const address = 600
-                        const quantity = 50
+                        // const address = 600
+                        // const quantity = 50
                         client
-                            .readHoldingRegisters(address, quantity)
-                            .then((result) => ({
-                                count: result.data[
-                                    params.holdReg_count - address
-                                ],
-                                run: result.data[params.holdReg_run - address],
-                            }))
+                            .readHoldingRegisters(
+                                params.address_register,
+                                params.quantity_register
+                            )
                             .then((result) => {
-                                // console.log(
-                                //     `${params.mch_code}, read holding register: \ncount: ${result.count} \nrun: ${result.run}\n`
-                                // )
-                                const data = {
-                                    ...params,
-                                    ...result,
-                                }
+                                let data_result = {}
+                                _.forEach(params.data_register, (val, key) => {
+                                    data_result[key] = result.data[val]
+                                })
 
-                                resolve(data)
+                                resolve({
+                                    ...params,
+                                    data_result,
+                                })
                             })
+                            .catch((error) => console.log(error.message))
                     })
+                    .catch((error) => console.log(error.message))
             } catch (error) {
                 reject(
                     new Error(
